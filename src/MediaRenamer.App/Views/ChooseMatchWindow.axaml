@@ -1,0 +1,42 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ctl="using:MediaRenamer.App.Controls"
+        xmlns:vm="using:MediaRenamer.App.ViewModels"
+        x:Class="MediaRenamer.App.Views.ChooseMatchWindow"
+        x:DataType="vm:ChooseMatchViewModel"
+        Title="Select best match" Width="620" Height="620" MinWidth="480" MinHeight="400"
+        WindowStartupLocation="CenterOwner">
+    <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="12" RowSpacing="8">
+        <Border Padding="8" CornerRadius="4" Background="#22888888">
+            <StackPanel Spacing="2">
+                <TextBlock Text="Unable to uniquely identify some of the following files:" />
+                <ItemsControl ItemsSource="{Binding Files}" />
+            </StackPanel>
+        </Border>
+        <TextBlock Grid.Row="1">
+            <Run Text="Select best match for " /><Run Text="{Binding Title}" FontWeight="Bold" />
+        </TextBlock>
+
+        <ListBox Grid.Row="2" x:Name="CandidateList" ItemsSource="{Binding Candidates}" SelectedItem="{Binding Selected}"
+                 ScrollViewer.HorizontalScrollBarVisibility="Auto" DoubleTapped="OnDoubleTapped">
+            <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="vm:ResultItem">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                        <Border Width="40" Height="58" CornerRadius="2" Background="#22888888">
+                            <Image Source="{Binding Thumbnail}" Stretch="UniformToFill" />
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding Label}" />
+                            <TextBlock Text="{Binding Subtitle}" FontSize="12" Opacity="0.6" />
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+            <Button ctl:Ic.Icon="check" Classes="accent" Content="Select" MinWidth="90" HorizontalContentAlignment="Center" IsEnabled="{Binding HasSelection}" Click="OnSelect" />
+            <Button ctl:Ic.Icon="close" Content="Skip" MinWidth="90" HorizontalContentAlignment="Center" IsCancel="True" Click="OnSkip" />
+        </StackPanel>
+    </Grid>
+</Window>

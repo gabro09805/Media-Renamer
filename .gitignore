@@ -1,0 +1,13 @@
+bin/
+obj/
+.vs/
+.idea/
+*.user
+*.suo
+TestResults/
+publish/
+artifacts/
+dist/
+userdata/
+docs/
+.github/copilot-instructions.md

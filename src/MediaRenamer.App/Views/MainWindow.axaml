@@ -1,0 +1,43 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:MediaRenamer.App.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="640"
+        x:Class="MediaRenamer.App.Views.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Icon="/Assets/MediaRenamer.ico"
+        Width="1400" Height="720" MinWidth="1100" MinHeight="500"
+        Title="MediaRenamer">
+
+    <DockPanel>
+        <Border DockPanel.Dock="Left" Width="200" BorderThickness="0,0,1,0"
+                Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="10" Margin="18,20,12,16">
+                    <Path Data="{Binding BrandIcon}" Stroke="{DynamicResource SystemAccentColor}" StrokeThickness="1.9"
+                          StrokeLineCap="Round" StrokeJoin="Round" Width="26" Height="26" Stretch="Uniform" />
+                    <TextBlock Text="MediaRenamer" FontSize="17" FontWeight="Bold" VerticalAlignment="Center" />
+                </StackPanel>
+                <ListBox x:Name="Sidebar" ItemsSource="{Binding NavItems}" SelectedItem="{Binding Selected}" Margin="6,0">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="vm:NavItem">
+                            <StackPanel Orientation="Horizontal" Spacing="12" Margin="6,9">
+                                <Path Data="{Binding IconData}" Stroke="{Binding $parent[ListBoxItem].Foreground}" StrokeThickness="1.9"
+                                      StrokeLineCap="Round" StrokeJoin="Round" Width="18" Height="18" Stretch="Uniform" />
+                                <TextBlock Text="{Binding Title}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </Border>
+
+        <DockPanel Margin="16,14,16,12">
+            <TextBlock DockPanel.Dock="Top" Text="{Binding Selected.Title}" FontSize="24" FontWeight="SemiBold"
+                       HorizontalAlignment="Left" Margin="0,0,0,12" />
+            <ContentControl Content="{Binding Selected.Page}" />
+        </DockPanel>
+    </DockPanel>
+</Window>

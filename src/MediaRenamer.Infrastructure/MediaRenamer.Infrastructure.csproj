@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\MediaRenamer.Plugin.Abstractions\MediaRenamer.Plugin.Abstractions.csproj" />
+    <ProjectReference Include="..\MediaRenamer.Model\MediaRenamer.Model.csproj" />
+    <ProjectReference Include="..\MediaRenamer.Platform\MediaRenamer.Platform.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

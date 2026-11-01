@@ -1,0 +1,62 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ctl="using:MediaRenamer.App.Controls"
+        xmlns:vm="using:MediaRenamer.App.ViewModels"
+        x:Class="MediaRenamer.App.Views.EditMatchWindow"
+        x:DataType="vm:EditMatchViewModel"
+        Title="Edit Match" Width="720" Height="600" MinWidth="560" MinHeight="420"
+        WindowStartupLocation="CenterOwner">
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto,*,Auto,Auto,Auto" Margin="12" RowSpacing="8">
+        <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <TextBox x:Name="QueryBox" Text="{Binding Query}" PlaceholderText="Name to search" KeyDown="OnQueryKeyDown" />
+            <Button ctl:Ic.Icon="search" Grid.Column="1" Content="Search" Command="{Binding SearchCommand}" />
+        </Grid>
+
+        <ListBox Grid.Row="2" ItemsSource="{Binding Results}" SelectedItem="{Binding SelectedResult}"
+                 IsVisible="{Binding HasResults}" MaxHeight="260" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+            <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="vm:ResultItem">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                        <Border Width="40" Height="58" CornerRadius="2" Background="#22888888">
+                            <Image Source="{Binding Thumbnail}" Stretch="UniformToFill" />
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding Label}" />
+                            <TextBlock Text="{Binding Subtitle}" FontSize="12" Opacity="0.6" />
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="6">
+            <TextBlock Text="Selected:" Opacity="0.7" />
+            <TextBlock Text="{Binding SelectedName}" FontWeight="SemiBold" />
+            <TextBlock Text="{Binding ProviderText}" Opacity="0.6" Margin="12,0,0,0" />
+        </StackPanel>
+
+        <ListBox Grid.Row="4" ItemsSource="{Binding Episodes}" SelectedItem="{Binding SelectedEpisode}"
+                 IsVisible="{Binding IsSeries}" ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                 DoubleTapped="OnEpisodeDoubleTapped">
+            <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="vm:EpisodeItem">
+                    <TextBlock Text="{Binding Label}" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <TextBlock Grid.Row="5" Text="{Binding Status}" Opacity="0.8" TextWrapping="Wrap" />
+
+        <StackPanel Grid.Row="6" Orientation="Horizontal" Spacing="16">
+            <RadioButton GroupName="Scope" Content="Apply only to selected item" IsChecked="{Binding ApplyToSelectedOnly}" />
+            <RadioButton GroupName="Scope" Content="Apply to all files of the same series/movie" IsChecked="{Binding ApplyToAll}" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="7" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+            <Button ctl:Ic.Icon="check" Classes="accent" Content="OK" MinWidth="90" HorizontalContentAlignment="Center" IsEnabled="{Binding CanConfirm}" Click="OnOk" />
+            <Button ctl:Ic.Icon="close" Content="Cancel" MinWidth="90" HorizontalContentAlignment="Center" IsCancel="True" Click="OnCancel" />
+        </StackPanel>
+    </Grid>
+</Window>

@@ -1,0 +1,47 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:MediaRenamer.App.ViewModels"
+        xmlns:cat="using:MediaRenamer.Bindings.Catalog"
+        xmlns:host="using:MediaRenamer.PluginHost"
+        xmlns:ctl="using:MediaRenamer.App.Controls"
+        x:Class="MediaRenamer.App.Views.BindingInspectorWindow"
+        x:DataType="vm:BindingInspectorViewModel"
+        Title="{Binding Title}" Width="1100" Height="680" MinWidth="800" MinHeight="480"
+        WindowStartupLocation="CenterOwner">
+    <Grid RowDefinitions="Auto,Auto,*" Margin="12" RowSpacing="8">
+        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+            <Button ctl:Ic.Icon="search" Classes="accent" Content="{Binding PickButtonText}" Click="OnPick" MinHeight="38" Padding="16,6"
+                    ToolTip.Tip="Click to choose what to inspect" />
+            <TextBlock Grid.Column="1" Text="{Binding ChosenName}" FontWeight="SemiBold" FontSize="16" VerticalAlignment="Center"
+                       TextTrimming="CharacterEllipsis" />
+        </Grid>
+        <TextBlock Grid.Row="1" Text="{Binding Status}" Opacity="0.8" TextWrapping="Wrap" />
+
+        <Grid Grid.Row="2" ColumnDefinitions="Auto,*" ColumnSpacing="8">
+            <DockPanel Width="320" IsVisible="{Binding IsSeries}">
+                <TextBlock DockPanel.Dock="Top" Text="Episodes" FontWeight="SemiBold" Margin="0,0,0,4" />
+                <ListBox ItemsSource="{Binding Episodes}" SelectedItem="{Binding SelectedEpisode}" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="vm:EpisodeItem"><TextBlock Text="{Binding Label}" /></DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+            <DockPanel Grid.Column="1">
+                <Grid DockPanel.Dock="Top" Margin="0,0,0,6" ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                    <TextBox PlaceholderText="Filter" Text="{Binding Filter}" />
+                    <ComboBox Grid.Column="1" ItemsSource="{Binding FilterScopes}" SelectedItem="{Binding FilterScope}" MinWidth="170" />
+                </Grid>
+                <ListBox ItemsSource="{Binding Rows}" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="cat:BindingRow">
+                            <Grid ColumnDefinitions="220,Auto" ToolTip.Tip="{Binding Description}">
+                                <TextBlock Text="{Binding Name}" FontFamily="Consolas, Menlo, monospace" TextTrimming="CharacterEllipsis" />
+                                <TextBlock Grid.Column="1" Text="{Binding Value}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </Grid>
+    </Grid>
+</Window>

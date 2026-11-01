@@ -1,0 +1,116 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ctl="using:MediaRenamer.App.Controls"
+             xmlns:vm="using:MediaRenamer.App.ViewModels"
+             x:Class="MediaRenamer.App.Views.RenameView"
+             x:DataType="vm:RenameViewModel">
+    <UserControl.Styles>
+        <Style Selector="WrapPanel.bar > Button"><Setter Property="Margin" Value="2" /><Setter Property="Padding" Value="8,6" /></Style>
+        <Style Selector="ListBoxItem" x:DataType="vm:FileRowViewModel">
+            <Setter Property="Background" Value="{Binding RowBackground}" />
+        </Style>
+    </UserControl.Styles>
+    <DockPanel>
+        <Border DockPanel.Dock="Bottom" Margin="0,8,0,0">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="6">
+                    <Button ctl:Ic.Icon="undo" Content="Undo last rename" Command="{Binding UndoCommand}" IsEnabled="{Binding CanUndo}" />
+                </StackPanel>
+                <TextBlock Text="{Binding Status}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+            </DockPanel>
+        </Border>
+
+        <Panel x:Name="DragHost">
+        <Grid ColumnDefinitions="*,Auto,*">
+            <Border Grid.Column="0" Classes="card" x:Name="DropZone">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Classes="h2" Text="Original Files" Margin="0,0,0,8" />
+                    <WrapPanel Classes="bar" DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,8,0,0"
+                                HorizontalAlignment="Center">
+                        <Button ctl:Ic.Icon="select-all" Content="Select all" Click="OnSelectAllOriginal" />
+                        <Button ctl:Ic.Icon="down" ToolTip.Tip="Move the selected files down (their new names go with them)" Click="OnMoveDown" />
+                        <Button ctl:Ic.Icon="up" ToolTip.Tip="Move the selected files up (their new names go with them)" Click="OnMoveUp" />
+                        <Button ctl:Ic.Icon="close" ToolTip.Tip="Remove selected" Click="OnRemove" />
+                        <Button ctl:Ic.Icon="folder" Content="Load">
+                            <Button.Flyout>
+                                <MenuFlyout Placement="TopEdgeAlignedLeft">
+                                    <MenuItem Header="Files..." Click="OnLoadFiles" />
+                                    <MenuItem Header="Folder..." Click="OnLoadFolder" />
+                                </MenuFlyout>
+                            </Button.Flyout>
+                        </Button>
+                        <Button ctl:Ic.Icon="refresh" ToolTip.Tip="Reload" Command="{Binding ReloadCommand}" />
+                        <Button ctl:Ic.Icon="trash" Content="Clear" Command="{Binding ClearCommand}" />
+                    </WrapPanel>
+                    <ListBox x:Name="OriginalList" ItemsSource="{Binding Rows}" SelectionMode="Multiple" KeyDown="OnOriginalKeyDown"
+                             ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="vm:FileRowViewModel">
+                                <TextBlock Text="{Binding DisplayOriginal}" ToolTip.Tip="{Binding Path}" />
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </Border>
+
+            <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="80" Margin="12,0">
+                <Button ctl:Ic.Icon="link" ctl:Ic.Stacked="True" Classes="accent" x:Name="MatchButton" Content="Match" MinWidth="72" Padding="4,8" HorizontalContentAlignment="Center"
+                        IsEnabled="{Binding !IsBusy}">
+                    <Button.Flyout>
+                        <MenuFlyout Placement="RightEdgeAlignedTop" />
+                    </Button.Flyout>
+                </Button>
+                <Button ctl:Ic.Icon="arrow-right" ctl:Ic.Stacked="True" Classes="accent" Content="Rename" MinWidth="72" Padding="4,8" HorizontalContentAlignment="Center" Click="OnRename" />
+            </StackPanel>
+
+            <Border Grid.Column="2" Classes="card">
+                <DockPanel>
+                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+                        <TextBlock DockPanel.Dock="Right" Text="{Binding ActiveProviderText}" Opacity="0.7" />
+                        <TextBlock Classes="h2" Text="New Names" />
+                    </DockPanel>
+                    <WrapPanel Classes="bar" DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,8,0,0"
+                                HorizontalAlignment="Center">
+                        <Button ctl:Ic.Icon="download" x:Name="FetchButton" Content="Fetch Data">
+                            <Button.Flyout>
+                                <MenuFlyout Placement="TopEdgeAlignedLeft" />
+                            </Button.Flyout>
+                        </Button>
+                        <Button ctl:Ic.Icon="select-all" Content="Select all" Click="OnSelectAllNew" />
+                        <Button ctl:Ic.Icon="down" ToolTip.Tip="Move the selected new names down (the other names shift)" Click="OnMoveNewDown" />
+                        <Button ctl:Ic.Icon="up" ToolTip.Tip="Move the selected new names up (the other names shift)" Click="OnMoveNewUp" />
+                        <Button ctl:Ic.Icon="edit" Content="Edit" Click="OnEditMatch" ToolTip.Tip="Change the series, the episode or the movie of the selected file" />
+                        <Button ctl:Ic.Icon="sliders" Content="Edit Format" Click="OnEditFormat" />
+                    </WrapPanel>
+                    <ListBox x:Name="NewList" ItemsSource="{Binding Rows}" SelectionMode="Multiple" ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                             DoubleTapped="OnNewNameDoubleTapped">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="vm:FileRowViewModel">
+                                <ItemsControl ItemsSource="{Binding NewNameParts}" ToolTip.Tip="{Binding ToolTipText}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate><StackPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="vm:PathPart">
+                                            <Panel>
+                                                <TextBlock Text="{Binding Text}" Foreground="{Binding Brush}" IsVisible="{Binding IsColored}" />
+                                                <TextBlock Text="{Binding Text}" IsVisible="{Binding IsPlain}" />
+                                            </Panel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </Border>
+        </Grid>
+        <Canvas IsHitTestVisible="False">
+            <Border x:Name="DragGhost" IsVisible="False" Padding="10,5" CornerRadius="6" Opacity="0.92"
+                    Background="{DynamicResource SystemAccentColor}" BoxShadow="0 4 14 0 #66000000" MaxWidth="420">
+                <TextBlock x:Name="DragGhostText" Foreground="White" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+            </Border>
+        </Canvas>
+        </Panel>
+    </DockPanel>
+</UserControl>

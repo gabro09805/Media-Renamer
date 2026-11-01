@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\MediaRenamer.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
+    <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="12.1.4" />
+    <PackageReference Include="Avalonia.Desktop" Version="12.1.4" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.4" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.4" />
+    <PackageReference Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.3">
+      <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+      <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MediaRenamer.Model\MediaRenamer.Model.csproj" />
+    <ProjectReference Include="..\MediaRenamer.Bindings\MediaRenamer.Bindings.csproj" />
+    <ProjectReference Include="..\MediaRenamer.Core\MediaRenamer.Core.csproj" />
+    <ProjectReference Include="..\MediaRenamer.Plugin.Abstractions\MediaRenamer.Plugin.Abstractions.csproj" />
+    <ProjectReference Include="..\MediaRenamer.Platform\MediaRenamer.Platform.csproj" />
+    <ProjectReference Include="..\MediaRenamer.PluginHost\MediaRenamer.PluginHost.csproj" />
+    <ProjectReference Include="..\MediaRenamer.Infrastructure\MediaRenamer.Infrastructure.csproj" />
+    <ProjectReference Include="..\MediaRenamer.Providers.Tmdb\MediaRenamer.Providers.Tmdb.csproj" />
+    <ProjectReference Include="..\MediaRenamer.Providers.AniDb\MediaRenamer.Providers.AniDb.csproj" />
+  </ItemGroup>
+</Project>

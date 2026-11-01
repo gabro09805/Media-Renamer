@@ -1,0 +1,84 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ctl="using:MediaRenamer.App.Controls"
+             xmlns:vm="using:MediaRenamer.App.ViewModels"
+             xmlns:host="using:MediaRenamer.PluginHost"
+             x:Class="MediaRenamer.App.Views.SearchEpisodesView"
+             x:DataType="vm:SearchEpisodesViewModel">
+    <Grid RowDefinitions="Auto,Auto,*" RowSpacing="8">
+        <Grid ColumnDefinitions="220,*,Auto" ColumnSpacing="8">
+            <ComboBox ItemsSource="{Binding Providers}" SelectedItem="{Binding SelectedProvider}" HorizontalAlignment="Stretch"
+                      PlaceholderText="Episode provider">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="host:ProviderEntry"><TextBlock Text="{Binding Label}" /></DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <TextBox Grid.Column="1" Text="{Binding Query}" PlaceholderText="Series name" KeyDown="OnQueryKeyDown" />
+            <Button ctl:Ic.Icon="search" Grid.Column="2" Content="Search" Command="{Binding SearchCommand}" />
+        </Grid>
+        <TextBlock Grid.Row="1" Text="{Binding Status}" Opacity="0.8" TextWrapping="Wrap" />
+
+        <Grid Grid.Row="2" ColumnDefinitions="320,*" ColumnSpacing="12">
+            <Border BorderThickness="1" BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
+                <ListBox ItemsSource="{Binding Results}" SelectedItem="{Binding SelectedResult}"
+                         ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="vm:ResultItem">
+                            <Grid ColumnDefinitions="48,*" ColumnSpacing="8">
+                                <Image Source="{Binding Thumbnail}" Width="48" Height="68" Stretch="Uniform" />
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Label}" />
+                                    <TextBlock Text="{Binding Subtitle}" FontSize="12" Opacity="0.6" />
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Border>
+
+            <Grid Grid.Column="1" RowDefinitions="Auto,Auto,*" RowSpacing="8">
+                <TextBlock Text="{Binding SeriesName}" FontSize="18" FontWeight="SemiBold" TextWrapping="Wrap" />
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8">
+                    <Button ctl:Ic.Icon="select-all" Content="Select all" Command="{Binding SelectAllCommand}" />
+                    <Button ctl:Ic.Icon="deselect" Content="Deselect all" Command="{Binding DeselectAllCommand}" />
+                    <Button ctl:Ic.Icon="expand" Content="Expand" Command="{Binding ExpandAllCommand}" />
+                    <Button ctl:Ic.Icon="collapse" Content="Collapse" Command="{Binding CollapseAllCommand}" />
+                    <TextBlock VerticalAlignment="Center" Opacity="0.8" Text="{Binding SelectedCount, StringFormat='{}{0} selected'}" />
+                    <Button ctl:Ic.Icon="send" Classes="accent" Content="SEND TO RENAME" Click="OnSendToRename" />
+                </StackPanel>
+                <Border Grid.Row="2" BorderThickness="1" BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding Seasons}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:SeasonNode">
+                                    <Expander IsExpanded="{Binding IsExpanded}" HorizontalAlignment="Stretch" Margin="4">
+                                        <Expander.Header>
+                                            <CheckBox IsChecked="{Binding IsSelected}" Content="{Binding Header}" />
+                                        </Expander.Header>
+                                        <ItemsControl ItemsSource="{Binding Episodes}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate x:DataType="vm:EpisodeNode">
+                                                    <Grid ColumnDefinitions="Auto,Auto,*" Margin="0,2">
+                                                        <CheckBox IsChecked="{Binding IsSelected}" />
+                                                        <StackPanel Grid.Column="1" Width="110" Margin="0,0,8,0" VerticalAlignment="Center">
+                                                            <TextBlock Text="{Binding Aired}" FontSize="12" Opacity="0.6" />
+                                                        </StackPanel>
+                                                        <StackPanel Grid.Column="2">
+                                                            <TextBlock Text="{Binding Label}" />
+                                                            <TextBlock Text="{Binding Description}" FontSize="12" Opacity="0.6"
+                                                                       TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" MaxWidth="700" />
+                                                        </StackPanel>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </Expander>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Border>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

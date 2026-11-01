@@ -1,0 +1,149 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ctl="using:MediaRenamer.App.Controls"
+        xmlns:vm="using:MediaRenamer.App.ViewModels"
+        xmlns:cat="using:MediaRenamer.Bindings.Catalog"
+        xmlns:mod="using:MediaRenamer.Model"
+        x:Class="MediaRenamer.App.Views.FormatEditorWindow"
+        x:DataType="vm:FormatEditorViewModel"
+        Title="Edit Format" Width="1150" Height="760" MinWidth="900" MinHeight="520"
+        WindowStartupLocation="CenterOwner">
+    <Window.Styles>
+        <!-- The focused/hovered TextBox paints an opaque background that would hide the colored layer underneath. -->
+        <Style Selector="TextBox#ExpressionBox /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="TextBox#ExpressionBox:focus /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="TextBox#ExpressionBox:pointerover /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+    </Window.Styles>
+    <Grid ColumnDefinitions="300,*" RowDefinitions="*,Auto" Margin="12" ColumnSpacing="12">
+        <!-- Formats -->
+        <DockPanel>
+            <ComboBox DockPanel.Dock="Top" HorizontalAlignment="Stretch" ItemsSource="{Binding Kinds}" SelectedItem="{Binding SelectedKind}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="vm:KindOption"><TextBlock Text="{Binding Label}" /></DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <WrapPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
+                <Button ctl:Ic.Icon="plus" Content="New" Command="{Binding NewCommand}" Margin="0,0,4,4" />
+                <Button ctl:Ic.Icon="copy" Content="Duplicate" Command="{Binding DuplicateCommand}" Margin="0,0,4,4" />
+                <Button ctl:Ic.Icon="trash" Content="Delete" Command="{Binding DeleteCommand}" Margin="0,0,4,4" />
+                <Button ctl:Ic.Icon="download" Content="Import" Click="OnImport" Margin="0,0,4,4" />
+                <Button ctl:Ic.Icon="upload" Content="Export" Click="OnExport" Margin="0,0,4,4" />
+            </WrapPanel>
+            <ListBox Margin="0,8,0,0" ItemsSource="{Binding Formats}" SelectedItem="{Binding SelectedFormat}" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="mod:RenameFormat">
+                        <TextBlock Text="{Binding Name}" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+
+        <!-- Editor -->
+        <ScrollViewer Grid.Column="1">
+            <StackPanel Spacing="8" Margin="0,0,8,0">
+                <TextBlock Text="Name" FontWeight="SemiBold" />
+                <TextBox Text="{Binding Name}" IsReadOnly="{Binding IsBuiltIn}" />
+
+                <TextBlock Text="Format" FontWeight="SemiBold" />
+                <!-- The colored text is drawn under a TextBox whose own text is transparent (only caret and selection stay visible). -->
+                <Grid>
+                    <Border x:Name="HighlightClip" ClipToBounds="True" IsHitTestVisible="False" Margin="12,0,8,0" VerticalAlignment="Center">
+                        <TextBlock x:Name="Highlighted" FontFamily="Consolas, Menlo, monospace" TextWrapping="NoWrap" HorizontalAlignment="Left" />
+                    </Border>
+                    <TextBox x:Name="ExpressionBox" Text="{Binding Expression}" IsReadOnly="{Binding IsBuiltIn}"
+                             AcceptsReturn="False" FontFamily="Consolas, Menlo, monospace" Background="Transparent"
+                             Foreground="Transparent" CaretBrush="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+                </Grid>
+                <TextBlock Text="Built-in formats are read-only. Duplicate one to customize it." FontSize="12" Opacity="0.7"
+                           IsVisible="{Binding IsBuiltIn}" />
+
+                <TextBlock Text="Preview" FontWeight="SemiBold" Margin="0,8,0,0" />
+                <ComboBox ItemsSource="{Binding Samples}" SelectedItem="{Binding SelectedSample}" HorizontalAlignment="Stretch" />
+                <Border BorderThickness="1" Padding="8" CornerRadius="3" BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
+                    <StackPanel Spacing="2">
+                        <!-- Same level colours as the New Names list: each folder has its own colour, the file name stays neutral. -->
+                        <Grid ColumnDefinitions="70,*" RowDefinitions="Auto,Auto" RowSpacing="4" IsVisible="{Binding HasPreviewFolders}">
+                            <TextBlock Text="Folders" FontSize="12" Opacity="0.6" VerticalAlignment="Center" />
+                            <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                                <ItemsControl ItemsSource="{Binding PreviewFolders}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate><StackPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="vm:PathPart">
+                                            <TextBlock Text="{Binding Text}" Foreground="{Binding Brush}" FontWeight="SemiBold" FontFamily="Consolas, Menlo, monospace" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                            <TextBlock Grid.Row="1" Text="File" FontSize="12" Opacity="0.6" VerticalAlignment="Center" />
+                            <ScrollViewer Grid.Row="1" Grid.Column="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                                <TextBlock Text="{Binding Preview}" FontFamily="Consolas, Menlo, monospace" />
+                            </ScrollViewer>
+                        </Grid>
+                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" IsVisible="{Binding !HasPreviewFolders}">
+                            <TextBlock Text="{Binding Preview}" FontFamily="Consolas, Menlo, monospace" />
+                        </ScrollViewer>
+                    </StackPanel>
+                </Border>
+
+                <ItemsControl ItemsSource="{Binding Problems}" IsVisible="{Binding HasProblems}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="x:String">
+                            <TextBlock Text="{Binding}" TextWrapping="Wrap" Foreground="#D9822B" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <TextBlock Text="{Binding Status}" Opacity="0.8" />
+                <TextBlock Text="Bindings (click a name to insert)" FontWeight="SemiBold" Margin="0,8,0,0" />
+                <Border BorderThickness="1" CornerRadius="3" Height="290" BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
+                    <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                        <ItemsControl ItemsSource="{Binding BindingGroups}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:BindingGroup">
+                                    <StackPanel>
+                                        <Border Padding="6,3" Background="#22888888" BorderThickness="0,0,0,1"
+                                                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
+                                            <TextBlock Text="{Binding Category}" FontWeight="SemiBold" />
+                                        </Border>
+                                        <ItemsControl ItemsSource="{Binding Items}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate x:DataType="cat:BindingDefinition">
+                                                    <Grid ColumnDefinitions="170,*">
+                                                        <Border BorderThickness="0,0,1,1" BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
+                                                            <Button Tag="{Binding Name}" Click="OnInsertBinding" Padding="6,3"
+                                                                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Background="Transparent">
+                                                                <TextBlock Text="{Binding Name}" FontFamily="Consolas, Menlo, monospace" />
+                                                            </Button>
+                                                        </Border>
+                                                        <Border Grid.Column="1" Padding="8,3" BorderThickness="0,0,0,1"
+                                                                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
+                                                            <TextBlock Text="{Binding Description}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                                                        </Border>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" Margin="0,12,0,0">
+            <Button ctl:Ic.Icon="braces" Content="Binding values..." Click="OnShowValues" />
+            <Button ctl:Ic.Icon="save" Classes="accent" Content="Save" MinWidth="90" HorizontalContentAlignment="Center" Command="{Binding SaveCommand}" IsEnabled="{Binding CanEdit}" />
+            <Button ctl:Ic.Icon="check" Classes="accent" Content="Use this format" MinWidth="130" HorizontalContentAlignment="Center" Command="{Binding UseCommand}" />
+            <Button ctl:Ic.Icon="close" Content="Close" MinWidth="90" HorizontalContentAlignment="Center" IsCancel="True" Click="OnClose" />
+        </StackPanel>
+    </Grid>
+</Window>

@@ -1,0 +1,23 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/MediaRenamer.App/MediaRenamer.App.csproj" />
+    <Project Path="src/MediaRenamer.Bindings/MediaRenamer.Bindings.csproj" />
+    <Project Path="src/MediaRenamer.Core/MediaRenamer.Core.csproj" />
+    <Project Path="src/MediaRenamer.Infrastructure/MediaRenamer.Infrastructure.csproj" />
+    <Project Path="src/MediaRenamer.Model/MediaRenamer.Model.csproj" />
+    <Project Path="src/MediaRenamer.Platform/MediaRenamer.Platform.csproj" />
+    <Project Path="src/MediaRenamer.Plugin.Abstractions/MediaRenamer.Plugin.Abstractions.csproj" />
+    <Project Path="src/MediaRenamer.PluginHost/MediaRenamer.PluginHost.csproj" />
+    <Project Path="src/MediaRenamer.Providers.AniDb/MediaRenamer.Providers.AniDb.csproj" />
+    <Project Path="src/MediaRenamer.Providers.Tmdb/MediaRenamer.Providers.Tmdb.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/MediaRenamer.App.Tests/MediaRenamer.App.Tests.csproj" />
+    <Project Path="tests/MediaRenamer.Bindings.Tests/MediaRenamer.Bindings.Tests.csproj" />
+    <Project Path="tests/MediaRenamer.Core.Tests/MediaRenamer.Core.Tests.csproj" />
+    <Project Path="tests/MediaRenamer.Infrastructure.Tests/MediaRenamer.Infrastructure.Tests.csproj" />
+    <Project Path="tests/MediaRenamer.Model.Tests/MediaRenamer.Model.Tests.csproj" />
+    <Project Path="tests/MediaRenamer.PluginHost.Tests/MediaRenamer.PluginHost.Tests.csproj" />
+    <Project Path="tests/MediaRenamer.Providers.Tests/MediaRenamer.Providers.Tests.csproj" />
+  </Folder>
+</Solution>

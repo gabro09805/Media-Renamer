@@ -1,0 +1,64 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ctl="using:MediaRenamer.App.Controls"
+        xmlns:vm="using:MediaRenamer.App.ViewModels"
+        x:Class="MediaRenamer.App.Views.MatchPreferencesWindow"
+        x:DataType="vm:MatchPreferencesViewModel"
+        Title="Match Preferences" Width="440" Height="600" CanResize="False"
+        WindowStartupLocation="CenterOwner">
+    <Grid RowDefinitions="*,Auto" Margin="12">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+            <HeaderedContentControl Header="Language">
+                <Border BorderThickness="1" BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
+                    <ListBox ItemsSource="{Binding LanguageList}" SelectedItem="{Binding SelectedLanguage}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="vm:LanguageOption">
+                                <TextBlock Text="{Binding Name}" />
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Border>
+            </HeaderedContentControl>
+
+            <StackPanel Grid.Column="1" Spacing="12" Width="150">
+                <Border BorderThickness="1" Padding="8" CornerRadius="4"
+                        BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Match Mode" FontWeight="SemiBold" />
+                        <RadioButton GroupName="Mode" Content="Opportunistic" IsChecked="{Binding IsOpportunistic}" />
+                        <RadioButton GroupName="Mode" Content="Strict" IsChecked="{Binding IsStrict}" />
+                    </StackPanel>
+                </Border>
+                <Border BorderThickness="1" Padding="8" CornerRadius="4"
+                        BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="If no translation exists use" FontWeight="SemiBold" TextWrapping="Wrap" />
+                        <ComboBox ItemsSource="{Binding MissingOptions}" SelectedItem="{Binding SelectedMissing}" HorizontalAlignment="Stretch">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="vm:MissingOption"><TextBlock Text="{Binding Label}" /></DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                </Border>
+                <Border BorderThickness="1" Padding="8" CornerRadius="4"
+                        BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Episode Order" FontWeight="SemiBold" />
+                        <ItemsControl ItemsSource="{Binding Orders}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:OrderChoice">
+                                    <RadioButton GroupName="Order" Content="{Binding Label}" IsChecked="{Binding IsChecked}" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Grid>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" Margin="0,12,0,0">
+            <Button ctl:Ic.Icon="check" Classes="accent" Content="OK" MinWidth="80" HorizontalContentAlignment="Center" IsDefault="True" Click="OnOk" />
+            <Button ctl:Ic.Icon="close" Content="Cancel" MinWidth="80" HorizontalContentAlignment="Center" IsCancel="True" Click="OnCancel" />
+        </StackPanel>
+    </Grid>
+</Window>
